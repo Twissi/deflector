@@ -1,4 +1,4 @@
-!(function (window, document) {
+(function (window, document) {
     //
     // QUnit/SauceLabs integration
     //
@@ -36,7 +36,7 @@
         var def = new Deflector();
 
         ok(def, 'Deflector instantiated');
-        ok(def instanceof Deflector, 'Deflector has proper type')
+        ok(def instanceof Deflector, 'Deflector has proper type');
         ok(def._userAgent, 'Deflector set up');
     });
 })(window, document);

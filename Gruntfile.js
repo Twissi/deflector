@@ -8,7 +8,7 @@ grunt build
 if [ $? -ne 0 ]; then
   exit 1
 fi
-git add boxer.min.js
+git add deflector.min.js
 exit 0
 
 *******************************************************************************/
