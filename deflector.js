@@ -1,6 +1,6 @@
 (function(window, document, defaults) {
     //
-    // construct deflector (or simply deflect)
+    // instantiate deflector
     //
     var Deflector = function (options) {
         if (this instanceof Deflector) {
@@ -10,8 +10,7 @@
             }
         }
         else {
-            var deflector = new Deflector(options);
-            return deflector.deflect();
+            return new Deflector(options);
         }
     };
 
@@ -125,7 +124,7 @@
             date.setTime(date.getTime() + this._cookieTtl);
             expires = "; expires="+ date.toGMTString();
         }
-        document.cookie = this._cookieName +"=true"+ expires +"; path=/";
+        document.cookie = this._cookieName +"=1"+ expires +"; path=/";
     };
 
     // 

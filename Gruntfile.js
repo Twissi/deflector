@@ -30,7 +30,11 @@ module.exports = function(grunt) {
                     tags: ['master'],
                     urls: ['http://127.0.0.1:9999/'],
                     build: process.env.TRAVIS_JOB_ID,
-                    browsers: grunt.file.readJSON('browsers.json'),
+                    browsers: [
+                        { browserName: "chrome", version: "36" },
+                        { browserName: "android", version: "4.3" },
+                        { browserName: "iphone", version: "7.1" }
+                    ],
                     tunnelTimeout: 5,
                     concurrency: 3
                 }
