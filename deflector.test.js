@@ -1,9 +1,8 @@
-(function (window, document) {
+(function () {
     //
     // QUnit/SauceLabs integration
     //
     var log = [];
-    var testName;
 
     QUnit.done(function (test_results) {
         var tests = [];
@@ -47,38 +46,37 @@
     //
     // Constructor/cookie handling tests
     //
-    module('Basics');
+    module("Basics");
 
-    test('constructor test', function () {
+    test("constructor", function () {
         var def = new Deflector();
-        ok(def instanceof Deflector, 'plain Deflector instantiated (new)');
+        ok(def instanceof Deflector, "plain Deflector instantiated (new)");
 
         def = Deflector();
-        ok(def instanceof Deflector, 'plain Deflector instantiated (factory)');
+        ok(def instanceof Deflector, "plain Deflector instantiated (factory)");
 
-        def = new Deflector({ userAgent: 'foo'});
-        ok(def instanceof Deflector, 'overridden Deflector instantiated');
-        strictEqual(def._userAgent, 'foo', 'options successfully set');
+        def = new Deflector({ userAgent: "foo"});
+        ok(def instanceof Deflector, "overridden Deflector instantiated");
+        strictEqual(def._userAgent, "foo", "options successfully set");
     });
 
-
-    test('cookie test', function () {
+    test("cookie", function () {
         var def = new Deflector();
-        ok(!def.getCookie(), 'cookie initially not set');
+        ok(!def.getCookie(), "cookie initially not set");
 
         def.setCookie();
-        ok(def.getCookie(), 'cookie successfully set');
+        ok(def.getCookie(), "cookie successfully set");
         
         def.unsetCookie();
-        ok(!def.getCookie(), 'cookie successfully unset');
+        ok(!def.getCookie(), "cookie successfully unset");
     });
 
     //
     // Phone/tablet detection tests
     //
-    module('Detection');
+    module("Detection");
 
-    test('desktop test', function () {
+    test("desktop", function () {
         var def = new Deflector();
 
         def.init({ userAgent: userAgents.desktopChrome });
@@ -97,8 +95,7 @@
         ok(def.detect(), "desktop IE reverse-detected as desktop");
     });
 
-
-    test('phone test', function () {
+    test("phone", function () {
         var def = new Deflector();
 
         def.init({ userAgent: userAgents.phoneChrome });
@@ -111,8 +108,7 @@
         ok(!def.detect(), "phone Safari not reverse-detected as desktop");
     });
 
-
-    test('tablet test', function () {
+    test("tablet", function () {
         var def = new Deflector();
 
         def.init({ userAgent: userAgents.tabletChrome });
@@ -128,58 +124,53 @@
         ok(def.detect(), "tablet Chrome detected as mobile");
     });
 
-
-    test('advanced test', function () {
+    test("override", function () {
         var def = new Deflector({
-            cookieName: '_nodeftest',
-            includeLegacy: true,
+            baseUrl:   "//foo",
             userAgent: userAgents.phoneSafari
         });
 
-        def.init({ search: "?"+ def._paramNoDef });
-        ok(!def.decide(), 'decided not to redirect (param)');
+        def.init({ search: "?_nodef" });
+        ok(!def.decide(), "decided not to redirect (param)");
         def.init({ search: "" });
-        ok(!def.decide(), 'decided not to redirect (param persisted)');
-        def.unsetCookie();
+        ok(!def.decide(), "decided not to redirect (param persisted)");
 
-        def.init({ search: "?"+ def._paramDef });
-        ok(def.decide(), 'decided to redirect (param)');
+        def.init({ search: "?_def" });
+        ok(def.decide(), "decided to redirect (param)");
         def.init({ search: "" });
-        ok(def.decide(), 'decided to redirect (param persisted)');
-        def.unsetCookie();
+        ok(def.decide(), "decided to redirect (param persisted)");
 
-        def.init({ referrer: "http:"+ def._baseUrl });
-        ok(!def.decide(), 'decided not to redirect (referrer)');
+        def.init({ referrer: "http://foo/bar" });
+        ok(!def.decide(), "decided not to redirect (referrer)");
         def.init({ referrer: "" });
-        ok(!def.decide(), 'decided not to redirect (referrer persisted)');
+        ok(!def.decide(), "decided not to redirect (referrer persisted)");
+        
         def.unsetCookie();
-
-        ok(def.decide(), 'decided to redirect (reset)');
+        ok(def.decide(), "decided to redirect (reset)");
     });
 
     //
     // Path rewriting tests
     //
-    module('Rewrites');
+    module("Paths");
 
-    test('pathmap test', function () {
-        var def = new Deflector({ 
-            userAgent: userAgents.phoneSafari,
-            pathName: '/foo'
+    test("resolve", function () {
+        var def = new Deflector({
+            pathName:  "/foo",
+            userAgent: userAgents.phoneSafari
         });
-        strictEqual(def.getPath(), '/foo', 'returned path /foo');
+        strictEqual(def.getPath(), "/foo", "returned path /foo (no match)");
 
-        def.init({ defaultPath: '/bar'});
-        strictEqual(def.getPath(), '/bar', 'returned path /bar');
+        def.init({ defaultPath: "/bar"});
+        strictEqual(def.getPath(), "/bar", "returned path /bar (default)");
 
-        def.init({ pathMap: { '/foo': '/baz' }});
-        strictEqual(def.getPath(), '/baz', 'returned path /baz');
+        def.init({ pathMap: { "/foo": "/baz" }});
+        strictEqual(def.getPath(), "/baz", "returned path /baz (map)");
 
         def.init({ 
-            pathMap: { '^.+foo.*$': '/qux' },
+            pathMap: { "^.+foo.*$": "/qux" },
             regExpPaths: true
         });
-        strictEqual(def.getPath(), '/qux', 'returned path /qux');
+        strictEqual(def.getPath(), "/qux", "returned path /qux (regex)");
     });
-
-})(window, document);
+})();
