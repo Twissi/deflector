@@ -1,0 +1,16 @@
+{
+  "name": "deflector",
+  "main": "deflector.js",
+  "version": "0.0.1",
+  "homepage": "https://github.com/dmbch/deflector",
+  "authors": [
+    "dmbch <daniel@dmbch.net>"
+  ],
+  "description": "browser detection and redirection",
+  "keywords": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules"
+  ]
+}
