@@ -92,8 +92,7 @@
     //
     // access override cookie
     //
-    Deflector.prototype.getCookie = function ()
-    {
+    Deflector.prototype.getCookie = function () {
         var cookies = document.cookie.split(';'),
             cookieNameEq = this._cookieName +"=";
 
@@ -114,11 +113,9 @@
     // set override cookie
     //
     Deflector.prototype.setCookie = function () {
-        var expires = "";
+        var date = new Date(), expires = "";
 
         if (this._cookieTtl) {
-            var date = new Date();
-
             date.setTime(date.getTime() + this._cookieTtl);
             expires = "; expires="+ date.toGMTString();
         }
@@ -130,13 +127,12 @@
     //
     Deflector.prototype.unsetCookie = function () {
         var date = new Date();
+
         date.setTime(date.getTime() - 86400);
+        date = date.toGMTString();
 
-        var expires = "; expires="+ date.toGMTString();
-
-        document.cookie = this._cookieName +"="+ expires +"; path=/";
+        document.cookie = this._cookieName +"=; expires="+ date +"; path=/";
     };
-
 
     //
     // export constructor as anonymous module or global object

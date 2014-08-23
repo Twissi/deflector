@@ -50,28 +50,27 @@
     module('Basics');
 
     test('constructor test', function () {
-        var defP = new Deflector();
-        ok(defP instanceof Deflector, 'plain Deflector instantiated');
+        var def = new Deflector();
+        ok(def instanceof Deflector, 'plain Deflector instantiated (new)');
 
-        var defA = Deflector();
-        ok(defA instanceof Deflector, 'plain Deflector instantiated');
+        def = Deflector();
+        ok(def instanceof Deflector, 'plain Deflector instantiated (factory)');
 
-        var defO = new Deflector({ userAgent: 'foo'});
-        ok(defO instanceof Deflector, 'overridden Deflector instantiated');
-        strictEqual(defO._userAgent, 'foo', 'options has been set');
+        def = new Deflector({ userAgent: 'foo'});
+        ok(def instanceof Deflector, 'overridden Deflector instantiated');
+        strictEqual(def._userAgent, 'foo', 'options successfully set');
     });
 
 
     test('cookie test', function () {
         var def = new Deflector();
-
-        ok(!def.getCookie(), 'cookie not set');
+        ok(!def.getCookie(), 'cookie initially not set');
 
         def.setCookie();
-        ok(def.getCookie(), 'cookie set');
+        ok(def.getCookie(), 'cookie successfully set');
         
         def.unsetCookie();
-        ok(!def.getCookie(), 'cookie unset');
+        ok(!def.getCookie(), 'cookie successfully unset');
     });
 
     //
@@ -79,84 +78,83 @@
     //
     module('Detection');
 
-    test('desktop detection test', function () {
-        var defDC = new Deflector({ userAgent: userAgents.desktopChrome });
-        ok(!defDC.detect(), "desktop Chrome not detected");
+    test('desktop test', function () {
+        var def = new Deflector();
 
-        var defDF = new Deflector({ userAgent: userAgents.desktopFirefox });
-        ok(!defDF.detect(), "desktop Firefox not detected");
+        def.init({ userAgent: userAgents.desktopChrome });
+        ok(!def.detect(), "desktop Chrome not detected as mobile");
 
-        var defDS = new Deflector({ userAgent: userAgents.desktopSafari });
-        ok(!defDS.detect(), "desktop Safari not detected");
+        def.init({ userAgent: userAgents.desktopFirefox });
+        ok(!def.detect(), "desktop Firefox not detected as mobile");
 
-        var defDE = new Deflector({ userAgent: userAgents.desktopExplorer });
-        ok(!defDE.detect(), "desktop Internet Explorer not detected");
+        def.init({ userAgent: userAgents.desktopSafari });
+        ok(!def.detect(), "desktop Safari not detected as mobile");
 
-        var defRDC = new Deflector({ 
-            userAgent: userAgents.desktopChrome,
-            reverse: true
-        });
-        ok(defRDC.detect(), "desktop Chrome reverse-detected");
+        def.init({ userAgent: userAgents.desktopExplorer });
+        ok(!def.detect(), "desktop IE not detected as mobile");
+
+        def.init({ reverse: true });
+        ok(def.detect(), "desktop IE reverse-detected as desktop");
     });
 
 
-    test('phone detection test', function () {
-        var defPC = new Deflector({ userAgent: userAgents.phoneChrome });
-        ok(defPC.detect(), "phone Chrome detected");
+    test('phone test', function () {
+        var def = new Deflector();
 
-        var defPS = new Deflector({ userAgent: userAgents.phoneSafari });
-        ok(defPS.detect(), "phone Safari detected");
+        def.init({ userAgent: userAgents.phoneChrome });
+        ok(def.detect(), "phone Chrome detected as mobile");
 
-        var defRPC = new Deflector({ 
-            userAgent: userAgents.phoneChrome,
-            reverse: true
-        });
-        ok(!defRPC.detect(), "phone Chrome not reverse-detected");
+        def.init({ userAgent: userAgents.phoneSafari });
+        ok(def.detect(), "phone Safari detected as mobile");
+
+        def.init({ reverse: true });
+        ok(!def.detect(), "phone Safari not reverse-detected as desktop");
     });
 
 
-    test('tablet detection test', function () {
-        var defTC = new Deflector({ userAgent: userAgents.tabletChrome });
-        ok(!defTC.detect(), "tablet Chrome not detected");
+    test('tablet test', function () {
+        var def = new Deflector();
 
-        var defTS = new Deflector({ userAgent: userAgents.tabletSafari });
-        ok(!defTS.detect(), "tablet Safari not detected");
+        def.init({ userAgent: userAgents.tabletChrome });
+        ok(!def.detect(), "tablet Chrome not detected as mobile");
 
-        var defTTC = new Deflector({ 
-            userAgent: userAgents.tabletChrome,
-            includeTablet: true
-        });
-        ok(defTTC.detect(), "tablet Chrome detected");
+        def.init({ userAgent: userAgents.tabletSafari });
+        ok(!def.detect(), "tablet Safari not detected as mobile");
 
-        var defTTS = new Deflector({ 
-            userAgent: userAgents.tabletSafari,
-            includeTablet: true
-        });
-        ok(defTTS.detect(), "tablet Safari detected");
+        def.init({ includeTablet: true });
+        ok(def.detect(), "tablet Safari detected as mobile");
+
+        def.init({ userAgent: userAgents.tabletChrome });
+        ok(def.detect(), "tablet Chrome detected as mobile");
     });
 
 
-    test('advanced detection test', function () {
-        var def = new Deflector({ 
-            userAgent: userAgents.phoneSafari,
-            cookieName: '__nodeftest'
+    test('advanced test', function () {
+        var def = new Deflector({
+            cookieName: '_nodeftest',
+            includeLegacy: true,
+            userAgent: userAgents.phoneSafari
         });
-        ok(def.decide(), 'decided to redirect');
-        def.setCookie();
-        ok(!def.decide(), 'decided not to redirect');
+
+        def.init({ search: "?"+ def._paramNoDef });
+        ok(!def.decide(), 'decided not to redirect (param)');
+        def.init({ search: "" });
+        ok(!def.decide(), 'decided not to redirect (param persisted)');
         def.unsetCookie();
-        ok(def.decide(), 'decided to redirect');
 
-        def.init({ search: "?_nodef" });
-        ok(!def.decide(), 'decided not to redirect');
-
-        def.init({ search: "?_def" });
-        ok(def.decide(), 'decided to redirect');
+        def.init({ search: "?"+ def._paramDef });
+        ok(def.decide(), 'decided to redirect (param)');
+        def.init({ search: "" });
+        ok(def.decide(), 'decided to redirect (param persisted)');
+        def.unsetCookie();
 
         def.init({ referrer: "http:"+ def._baseUrl });
-        ok(!def.decide(), 'decided not to redirect');
-
+        ok(!def.decide(), 'decided not to redirect (referrer)');
+        def.init({ referrer: "" });
+        ok(!def.decide(), 'decided not to redirect (referrer persisted)');
         def.unsetCookie();
+
+        ok(def.decide(), 'decided to redirect (reset)');
     });
 
     //

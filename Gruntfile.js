@@ -50,7 +50,7 @@ module.exports = function(grunt) {
         watch: {
             main: {
                 files: ['deflector.js', 'deflector.test.js'],
-                tasks: ['jshint']
+                tasks: ['build']
             }
         }
     });
@@ -62,5 +62,5 @@ module.exports = function(grunt) {
     }
     grunt.registerTask('devel', ['connect', 'watch']);
     grunt.registerTask('build', ['jshint', 'uglify']);
-    grunt.registerTask('test', ['build', 'connect', 'saucelabs-qunit']);
+    grunt.registerTask('test',  ['jshint', 'connect', 'saucelabs-qunit']);
 };
