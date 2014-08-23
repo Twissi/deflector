@@ -49,7 +49,7 @@ module.exports = function(grunt) {
         },
         watch: {
             main: {
-                files: ['deflector.js'],
+                files: ['deflector.js', 'deflector.test.js'],
                 tasks: ['jshint']
             }
         }

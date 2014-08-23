@@ -45,7 +45,7 @@
     };
 
     //
-    // Actual tests
+    // Constructor/cookie handling tests
     //
     module('Basics');
 
@@ -53,10 +53,12 @@
         var defP = new Deflector();
         ok(defP instanceof Deflector, 'plain Deflector instantiated');
 
+        var defA = Deflector();
+        ok(defA instanceof Deflector, 'plain Deflector instantiated');
 
         var defO = new Deflector({ userAgent: 'foo'});
         ok(defO instanceof Deflector, 'overridden Deflector instantiated');
-        ok(defO._userAgent === 'foo', 'options has been set');
+        strictEqual(defO._userAgent, 'foo', 'options has been set');
     });
 
 
@@ -64,7 +66,7 @@
         var def = new Deflector();
 
         ok(!def.getCookie(), 'cookie not set');
-        
+
         def.setCookie();
         ok(def.getCookie(), 'cookie set');
         
@@ -72,10 +74,12 @@
         ok(!def.getCookie(), 'cookie unset');
     });
 
-
+    //
+    // Phone/tablet detection tests
+    //
     module('Detection');
 
-    test('desktop test', function () {
+    test('desktop detection test', function () {
         var defDC = new Deflector({ userAgent: userAgents.desktopChrome });
         ok(!defDC.detect(), "desktop Chrome not detected");
 
@@ -96,7 +100,7 @@
     });
 
 
-    test('phone test', function () {
+    test('phone detection test', function () {
         var defPC = new Deflector({ userAgent: userAgents.phoneChrome });
         ok(defPC.detect(), "phone Chrome detected");
 
@@ -111,7 +115,7 @@
     });
 
 
-    test('tablet test', function () {
+    test('tablet detection test', function () {
         var defTC = new Deflector({ userAgent: userAgents.tabletChrome });
         ok(!defTC.detect(), "tablet Chrome not detected");
 
@@ -129,6 +133,55 @@
             includeTablet: true
         });
         ok(defTTS.detect(), "tablet Safari detected");
+    });
+
+
+    test('advanced detection test', function () {
+        var def = new Deflector({ 
+            userAgent: userAgents.phoneSafari,
+            cookieName: '__nodeftest'
+        });
+        ok(def.decide(), 'decided to redirect');
+        def.setCookie();
+        ok(!def.decide(), 'decided not to redirect');
+        def.unsetCookie();
+        ok(def.decide(), 'decided to redirect');
+
+        def.init({ search: "?_nodef" });
+        ok(!def.decide(), 'decided not to redirect');
+
+        def.init({ search: "?_def" });
+        ok(def.decide(), 'decided to redirect');
+
+        def.init({ referrer: "http:"+ def._baseUrl });
+        ok(!def.decide(), 'decided not to redirect');
+
+        def.unsetCookie();
+    });
+
+    //
+    // Path rewriting tests
+    //
+    module('Rewrites');
+
+    test('pathmap test', function () {
+        var def = new Deflector({ 
+            userAgent: userAgents.phoneSafari,
+            pathName: '/foo'
+        });
+        strictEqual(def.getPath(), '/foo', 'returned path /foo');
+
+        def.init({ defaultPath: '/bar'});
+        strictEqual(def.getPath(), '/bar', 'returned path /bar');
+
+        def.init({ pathMap: { '/foo': '/baz' }});
+        strictEqual(def.getPath(), '/baz', 'returned path /baz');
+
+        def.init({ 
+            pathMap: { '^.+foo.*$': '/qux' },
+            regExpPaths: true
+        });
+        strictEqual(def.getPath(), '/qux', 'returned path /qux');
     });
 
 })(window, document);

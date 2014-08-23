@@ -39,11 +39,11 @@
     // enable detection override using referrer/query param/cookie
     //
     Deflector.prototype.decide = function () {
-        if (document.referrer.indexOf(this._baseUrl) ||
-            document.location.search.indexOf(this._paramNoDef)) {   
+        if (this._referrer.indexOf(this._baseUrl) > 0 ||
+            this._search.indexOf(this._paramNoDef) > 0) {   
             this.setCookie();
         }
-        else if (document.location.search.indexOf(this._paramDef)) {
+        else if (this._search.indexOf(this._paramDef) > 0) {
             this.unsetCookie();
         }
         return !this.getCookie() && this.detect();
@@ -73,22 +73,20 @@
     // determine destination path using path map and default path
     //
     Deflector.prototype.getPath = function () {
-        var pathName = document.location.pathname;
-
-        if (this._pathMap.hasOwnProperty(pathName)) {
-            return this._pathMap[pathName];
+        if (this._pathMap.hasOwnProperty(this._pathName)) {
+            return this._pathMap[this._pathName];
         }
         if (this._regExpPaths) {
             for (var key in this._pathMap) {
                 if (this._pathMap.hasOwnProperty(key)) {
                     var regExp = new RegExp(key, 'i');
-                    if (regExp.test(pathName)) {
+                    if (regExp.test(this._pathName)) {
                         return this._pathMap[key];
                     }
                 }
             }
         }
-        return this._defaultPath || pathname;
+        return this._defaultPath || this._pathName;
     };
 
     //
@@ -164,6 +162,9 @@
     cookieName:     "_nodef",
     paramNoDef:     "_nodef",
     paramDef:       "_def",
+    pathName:       document.location.pathname,
+    search:         document.location.search,
+    referrer:       document.referrer,
     //
     // provided by http://detectmobilebrowsers.com
     // based on http://wurfl.sourceforge.net
