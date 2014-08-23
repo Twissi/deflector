@@ -80,48 +80,48 @@
         var def = new Deflector();
 
         def.init({ userAgent: userAgents.desktopChrome });
-        ok(!def.detect(), "desktop Chrome not detected as mobile");
+        ok(!def.detect(), "Chrome not detected as mobile");
 
         def.init({ userAgent: userAgents.desktopFirefox });
-        ok(!def.detect(), "desktop Firefox not detected as mobile");
+        ok(!def.detect(), "Firefox not detected as mobile");
 
         def.init({ userAgent: userAgents.desktopSafari });
-        ok(!def.detect(), "desktop Safari not detected as mobile");
+        ok(!def.detect(), "Safari not detected as mobile");
 
         def.init({ userAgent: userAgents.desktopExplorer });
-        ok(!def.detect(), "desktop IE not detected as mobile");
+        ok(!def.detect(), "IE not detected as mobile");
 
         def.init({ reverse: true });
-        ok(def.detect(), "desktop IE reverse-detected as desktop");
+        ok(def.detect(), "IE reverse-detected as desktop");
     });
 
     test("phone", function () {
         var def = new Deflector();
 
         def.init({ userAgent: userAgents.phoneChrome });
-        ok(def.detect(), "phone Chrome detected as mobile");
+        ok(def.detect(), "Nexus 5 detected as mobile");
 
         def.init({ userAgent: userAgents.phoneSafari });
-        ok(def.detect(), "phone Safari detected as mobile");
+        ok(def.detect(), "iPhone detected as mobile");
 
         def.init({ reverse: true });
-        ok(!def.detect(), "phone Safari not reverse-detected as desktop");
+        ok(!def.detect(), "iPhone not reverse-detected as desktop");
     });
 
     test("tablet", function () {
-        var def = new Deflector();
+        var def = new Deflector({ includeLegacy: true });
 
         def.init({ userAgent: userAgents.tabletChrome });
-        ok(!def.detect(), "tablet Chrome not detected as mobile");
+        ok(!def.detect(), "Nexus 7 not detected as mobile (default)");
 
         def.init({ userAgent: userAgents.tabletSafari });
-        ok(!def.detect(), "tablet Safari not detected as mobile");
+        ok(!def.detect(), "iPad not detected as mobile (default)");
 
         def.init({ includeTablet: true });
-        ok(def.detect(), "tablet Safari detected as mobile");
+        ok(def.detect(), "iPad detected as mobile (incl. tablet)");
 
         def.init({ userAgent: userAgents.tabletChrome });
-        ok(def.detect(), "tablet Chrome detected as mobile");
+        ok(def.detect(), "Nexus 7 detected as mobile (incl. tablet)");
     });
 
     test("override", function () {

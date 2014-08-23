@@ -66,7 +66,7 @@
             regExp = new RegExp(this._patternLegacy, "i");
             result = regExp.test(this._userAgent.substr(0, 4));
         }
-        return this._reverse ? !result : !!result;
+        return this._reverse ? !result : result;
     };
 
     //

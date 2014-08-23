@@ -62,5 +62,5 @@ module.exports = function(grunt) {
     }
     grunt.registerTask('devel', ['connect', 'watch']);
     grunt.registerTask('build', ['jshint', 'uglify']);
-    grunt.registerTask('test',  ['jshint', 'connect', 'saucelabs-qunit']);
+    grunt.registerTask('test',  ['build', 'connect', 'saucelabs-qunit']);
 };
