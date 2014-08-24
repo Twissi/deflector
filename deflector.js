@@ -139,7 +139,8 @@
     //
     if (typeof define === "function" && define.amd) {
         define(function () { return Deflector; });
-    } else {
+    } 
+    else {
         window.Deflector = Deflector;
     }
 
