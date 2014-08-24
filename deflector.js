@@ -112,26 +112,24 @@
     //
     // set override cookie
     //
-    Deflector.prototype.setCookie = function () {
-        var date = new Date(), expires = "";
+    Deflector.prototype.setCookie = function (unset) {
+        var ttl = unset ? -86400000 : (this._cookieTtl * 1000),
+            value = unset ? "" : "1",
+            date = new Date(),
+            expires = "";
 
-        if (this._cookieTtl) {
-            date.setTime(date.getTime() + this._cookieTtl);
+        if (ttl) {
+            date.setTime(date.getTime() + ttl);
             expires = "; expires="+ date.toGMTString();
         }
-        document.cookie = this._cookieName +"=1"+ expires +"; path=/";
+        document.cookie = this._cookieName +"="+ value + expires +"; path=/";
     };
 
     // 
     // unset override cookie
     //
     Deflector.prototype.unsetCookie = function () {
-        var date = new Date();
-
-        date.setTime(date.getTime() - 86400);
-        date = date.toGMTString();
-
-        document.cookie = this._cookieName +"=; expires="+ date +"; path=/";
+        this.setCookie(true);
     };
 
     //
@@ -143,7 +141,6 @@
     else {
         window.Deflector = Deflector;
     }
-
 })(window, document, {
     //
     // define default options
