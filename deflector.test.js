@@ -156,7 +156,7 @@
 
     test("resolve", function () {
         var def = new Deflector({
-            pathName:  "/foo",
+            path:  "/foo",
             userAgent: userAgents.phoneSafari
         });
         strictEqual(def.getPath(), "/foo", "returned path /foo (no match)");

@@ -1,5 +1,5 @@
 
-/******************************************************************************
+/*******************************************************************************
 
 Add to .git/hooks/pre-commit (and chmod +x) to enable auto-linting/uglifying:
 
@@ -11,30 +11,30 @@ fi
 git add deflector.min.js
 exit 0
 
-******************************************************************************/
+*******************************************************************************/
 
 module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         connect: {
-            main: { options: { base: '.', port: 9999 }}
+            all: { options: { base: '.', port: 9999 }}
         },
         jshint: {
-            main: ['deflector.js', 'deflector.test.js', 'Gruntfile.js']
+            all: ['deflector.js', 'deflector.test.js', 'Gruntfile.js']
         },
         qunit: {
-            files: ['index.html']
+            all: ['index.html']
         },
         'saucelabs-qunit': {
-            main: {
+            all: {
                 options: {
                     testname: '<%= pkg.name %> tests',
                     tags: ['master'],
                     urls: ['http://127.0.0.1:9999/'],
                     build: process.env.TRAVIS_JOB_ID,
                     browsers: [
-                        { browserName: "chrome", version: "36" },
-                        { browserName: "android", version: "4.3" },
+                        { browserName: "internet explorer", version: "11" },
+                        { browserName: "android", version: "4.4" },
                         { browserName: "iphone", version: "7.1" }
                     ],
                     tunnelTimeout: 5,
@@ -43,11 +43,10 @@ module.exports = function(grunt) {
             }
         },
         uglify: {
-            options: { banner: '/*! <%= pkg.name %> <%= pkg.version %> */\n' },
-            main: { files: { 'deflector.min.js': 'deflector.js' }}
+            all: { files: { 'deflector.min.js': 'deflector.js' }}
         },
         watch: {
-            main: {
+            all: { 
                 files: ['deflector.js', 'deflector.test.js'],
                 tasks: ['build']
             }
@@ -59,7 +58,7 @@ module.exports = function(grunt) {
             grunt.loadNpmTasks(key);
         }
     }
-    grunt.registerTask('build',   ['jshint', 'uglify', 'qunit']);
-    grunt.registerTask('test',    ['build', 'connect', 'saucelabs-qunit']);
+    grunt.registerTask('build', ['jshint', 'uglify', 'qunit']);
+    grunt.registerTask('test', ['build', 'connect', 'saucelabs-qunit']);
     grunt.registerTask('default', ['build', 'connect', 'watch']);
 };
