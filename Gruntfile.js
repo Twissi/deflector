@@ -1,7 +1,7 @@
 
-/*******************************************************************************
+/******************************************************************************
 
-Add to ./.git/hooks/pre-commit (and chmod +x) to enable auto-linting/uglifying:
+Add to .git/hooks/pre-commit (and chmod +x) to enable auto-linting/uglifying:
 
 #!/bin/sh
 grunt build
@@ -11,22 +11,24 @@ fi
 git add deflector.min.js
 exit 0
 
-*******************************************************************************/
+******************************************************************************/
 
 module.exports = function(grunt) {
     grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
         connect: {
-            main: {
-                options: { base: '.', port: 9999 }
-            }
+            main: { options: { base: '.', port: 9999 }}
         },
         jshint: {
             main: ['deflector.js', 'deflector.test.js', 'Gruntfile.js']
         },
+        qunit: {
+            files: ['index.html']
+        },
         'saucelabs-qunit': {
             main: {
                 options: {
-                    testname: 'deflector tests',
+                    testname: '<%= pkg.name %> tests',
                     tags: ['master'],
                     urls: ['http://127.0.0.1:9999/'],
                     build: process.env.TRAVIS_JOB_ID,
@@ -41,11 +43,8 @@ module.exports = function(grunt) {
             }
         },
         uglify: {
-            main: {
-                files: {
-                    'deflector.min.js': 'deflector.js'
-                }
-            }
+            options: { banner: '/*! <%= pkg.name %> <%= pkg.version %> */\n' },
+            main: { files: { 'deflector.min.js': 'deflector.js' }}
         },
         watch: {
             main: {
@@ -60,7 +59,7 @@ module.exports = function(grunt) {
             grunt.loadNpmTasks(key);
         }
     }
-    grunt.registerTask('devel', ['connect', 'watch']);
-    grunt.registerTask('build', ['jshint', 'uglify']);
-    grunt.registerTask('test',  ['build', 'connect', 'saucelabs-qunit']);
+    grunt.registerTask('build',   ['jshint', 'uglify', 'qunit']);
+    grunt.registerTask('test',    ['build', 'connect', 'saucelabs-qunit']);
+    grunt.registerTask('default', ['build', 'connect', 'watch']);
 };
