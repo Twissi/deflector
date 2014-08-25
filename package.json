@@ -1,6 +1,6 @@
 {
     "name": "deflector",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "browser detection and redirection",
     "repository": {
         "type": "git",
