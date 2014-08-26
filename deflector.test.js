@@ -44,6 +44,15 @@
     };
 
     //
+    // User agent strings
+    //
+    var domains = {
+        subDomain:      "m.domain.de",
+        subsubDomain:   "m.sub.domain.de",
+        ukDomain:       "m.domain.co.uk"
+    };
+
+    //
     // Constructor/cookie handling tests
     //
     module("Basics");
@@ -69,6 +78,19 @@
         
         def.unsetCookie();
         ok(!def.getCookie(), "cookie successfully unset");
+    });
+
+    test("getDomain", function() {
+        var def = new Deflector();
+
+        def.init({ domain: domains.subDomain });
+        ok(def.getDomain() == "domain.de", "Domain  detected");
+
+        def.init({ domain: domains.subsubDomain });
+        ok(def.getDomain() == "domain.de", "Domain detected");
+
+        def.init({ domain: domains.ukDomain });
+        ok(def.getDomain() == "domain.co.uk", "Domain detected");
     });
 
     //
