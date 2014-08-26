@@ -116,13 +116,14 @@ void(function(window, document, defaults) {
         var ttl = unset ? -86400000 : (this._cookieTtl * 1000),
             value = unset ? "" : "1",
             date = new Date(),
-            expires = "";
+            expires = "",
+            path = this.getDomain() ? this.getDomain() : "/";
 
         if (ttl) {
             date.setTime(date.getTime() + ttl);
             expires = "; expires="+ date.toGMTString();
         }
-        document.cookie = this._cookieName +"="+ value + expires +"; path=/";
+        document.cookie = this._cookieName +"="+ value + expires +"; path=" + path;
     };
 
     // 
@@ -132,6 +133,22 @@ void(function(window, document, defaults) {
         this.setCookie(true);
     };
 
+    Deflector.prototype.getDomain = function () {
+        var domain, hostName = window.location.host;
+
+        if (hostName !== null) {
+            var parts = hostName.split('.').reverse();
+
+            if (parts !== null && parts.length > 1) {
+                domain = parts[1] + '.' + parts[0];
+
+                if (hostName.toLowerCase().indexOf('.co.uk') != -1 && parts.length > 2) {
+                    domain = parts[2] + '.' + domain;
+                }
+            }
+        }
+        return domain;
+    };
     //
     // export constructor as anonymous module or global object
     //
